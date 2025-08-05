@@ -159,8 +159,8 @@ Make it match your consulting brand:
 
 ### 🌟 **Share Your Success**
 We love hearing how this helps fellow freelancers:
-- 📧 Email us your wins: hello@dgsconsulting.com
-- 🐦 Tweet us @DGSConsulting with #PriorityWins
+- 📧 Email us your wins: DGSConsult@consultant.com
+- 🐦 Instagram us @ dgsconsult with #PriorityWins
 - 💼 LinkedIn success stories always welcome
 - ⭐ Star this repo if it saves your sanity
 
