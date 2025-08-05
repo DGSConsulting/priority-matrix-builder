@@ -1,151 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Priority Matrix Builder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Priority Matrix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Inline CSS -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-    .controls {
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 60%;
-      margin-right: 10px;
-    }
-    button {
-      padding: 10px;
-      margin-right: 5px;
-    }
-    .matrix {
-      position: relative;
-      width: 100%;
-      height: 400px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 1px;
-    }
-    .quadrant {
-      border: 1px solid #999;
-      position: relative;
-    }
-    .q1 { background-color: #ffcccc; } /* Urgent & Important */
-    .q2 { background-color: #cce5ff; } /* Urgent, Not Important */
-    .q3 { background-color: #d4edda; } /* Not Urgent, Not Important */
-    .q4 { background-color: #fff3cd; } /* Not Urgent, Important */
-    .labels {
-      position: absolute;
-      font-weight: bold;
-    }
-    .label-x {
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .label-y {
-      top: 50%;
-      left: -150px;
-      transform: rotate(-90deg) translateY(-50%);
-      transform-origin: left center;
-    }
-    .task {
-      position: absolute;
-      padding: 5px 10px;
-      background: white;
-      border: 1px solid #000;
-      cursor: move;
-    }
-  </style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #f0f6fc;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #58a6ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #f0f6fc;
+            padding: 8px 12px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2ea043, #238636);
+            transform: translateY(-1px);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #da3633, #f85149);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #f85149, #da3633);
+        }
+
+        .matrix-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            width: 100%;
+            height: 600px;
+            background: #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .quadrant {
+            background: rgba(33, 38, 45, 0.8);
+            padding: 20px;
+            position: relative;
+            min-height: 200px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .quadrant:hover {
+            background: rgba(33, 38, 45, 0.9);
+            transform: scale(1.02);
+        }
+
+        .quadrant h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            text-align: center;
+        }
+
+        .do-first {
+            border-bottom-color: #f85149;
+            background: linear-gradient(135deg, rgba(248, 81, 73, 0.1), rgba(218, 54, 51, 0.05));
+        }
+
+        .do-first h3 {
+            color: #f85149;
+        }
+
+        .schedule {
+            border-bottom-color: #d29922;
+            background: linear-gradient(135deg, rgba(210, 153, 34, 0.1), rgba(187, 128, 9, 0.05));
+        }
+
+        .schedule h3 {
+            color: #d29922;
+        }
+
+        .delegate {
+            border-bottom-color: #58a6ff;
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(79, 125, 201, 0.05));
+        }
+
+        .delegate h3 {
+            color: #58a6ff;
+        }
+
+        .eliminate {
+            border-bottom-color: #8b949e;
+            background: linear-gradient(135deg, rgba(139, 148, 158, 0.1), rgba(110, 118, 129, 0.05));
+        }
+
+        .eliminate h3 {
+            color: #8b949e;
+        }
+
+        .task {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .task:hover {
+            border-color: #58a6ff;
+            background: rgba(13, 17, 23, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+        }
+
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #f0f6fc;
+        }
+
+        .task-description {
+            font-size: 0.9rem;
+            color: #8b949e;
+            line-height: 1.4;
+        }
+
+        .task .delete-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: #f85149;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task .delete-btn:hover {
+            background: rgba(248, 81, 73, 0.1);
+        }
+
+        .axis-label {
+            position: absolute;
+            font-weight: 600;
+            color: #8b949e;
+            font-size: 1rem;
+        }
+
+        .x-axis {
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .y-axis {
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+        }
+
+        .axis-values {
+            position: absolute;
+            color: #6e7681;
+            font-size: 0.9rem;
+        }
+
+        .low-effort {
+            bottom: -50px;
+            left: 25%;
+            transform: translateX(-50%);
+        }
+
+        .high-effort {
+            bottom: -50px;
+            right: 25%;
+            transform: translateX(50%);
+        }
+
+        .low-impact {
+            left: -100px;
+            bottom: 25%;
+            transform: rotate(-90deg);
+        }
+
+        .high-impact {
+            left: -100px;
+            top: 25%;
+            transform: rotate(-90deg);
+        }
+
+        .drop-zone {
+            border: 2px dashed transparent;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .matrix {
+                height: 800px;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 1fr);
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            input[type="text"] {
+                min-width: auto;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Priority Matrix Builder</h1>
+    <div class="header">
+        <h1>GitHub Priority Matrix</h1>
+        <p>Organize your issues and tasks using the Eisenhower Matrix</p>
+    </div>
 
     <div class="controls">
-      <input type="text" id="taskInput" placeholder="Enter task name" />
-      <button onclick="addTask()">Add Task</button>
-      <button onclick="clearAll()">Clear All</button>
+        <div class="input-group">
+            <input type="text" id="taskTitle" placeholder="Task title (e.g., Fix login bug)" />
+        </div>
+        <div class="input-group">
+            <input type="text" id="taskDescription" placeholder="Description (optional)" />
+        </div>
+        <button onclick="addTask()">Add Task</button>
+        <button class="clear-btn" onclick="clearAll()">Clear All</button>
     </div>
 
-    <div class="matrix" id="matrix" onclick="addTaskAtPosition(event)">
-      <div class="quadrant q1"></div>
-      <div class="quadrant q2"></div>
-      <div class="quadrant q3"></div>
-      <div class="quadrant q4"></div>
-      <div class="labels label-x">Urgency →</div>
-      <div class="labels label-y">Importance ↑</div>
+    <div class="matrix-container">
+        <div class="matrix">
+            <div class="quadrant do-first drop-zone" data-quadrant="do-first">
+                <h3>🚨 Do First</h3>
+                <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 15px;">High Impact + Low Effort</p>
+                <div class="tasks" id="do-first-tasks"></div>
+            </div>
+            <div class="quadrant schedule drop-zone" data-quadrant="schedule">
+                <h3>📅 Schedule</h3>
+                <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 15px;">High Impact + High Effort</p>
+                <div class="tasks" id="schedule-tasks"></div>
+            </div>
+            <div class="quadrant delegate drop-zone" data-quadrant="delegate">
+                <h3>👥 Delegate</h3>
+                <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 15px;">Low Impact + Low Effort</p>
+                <div class="tasks" id="delegate-tasks"></div>
+            </div>
+            <div class="quadrant eliminate drop-zone" data-quadrant="eliminate">
+                <h3>🗑️ Eliminate</h3>
+                <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 15px;">Low Impact + High Effort</p>
+                <div class="tasks" id="eliminate-tasks"></div>
+            </div>
+        </div>
+        
+        <div class="axis-label x-axis">EFFORT</div>
+        <div class="axis-label y-axis">IMPACT</div>
+        <div class="axis-values low-effort">Low Effort</div>
+        <div class="axis-values high-effort">High Effort</div>
+        <div class="axis-values low-impact">Low Impact</div>
+        <div class="axis-values high-impact">High Impact</div>
     </div>
-  </div>
 
-  <!-- Inline JavaScript -->
- <script>
-  function makeTaskDraggable(task) {
-    let offsetX = 0, offsetY = 0, isDragging = false;
+    <script>
+        let taskCounter = 0;
+        let tasks = {};
 
-    task.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      offsetX = e.offsetX;
-      offsetY = e.offsetY;
-    });
+        function addTask() {
+            const titleInput = document.getElementById('taskTitle');
+            const descriptionInput = document.getElementById('taskDescription');
+            
+            const title = titleInput.value.trim();
+            if (!title) {
+                alert('Please enter a task title');
+                return;
+            }
+            
+            const description = descriptionInput.value.trim();
+            
+            taskCounter++;
+            const taskId = `task-${taskCounter}`;
+            
+            const task = {
+                id: taskId,
+                title: title,
+                description: description,
+                quadrant: 'do-first' // Default to do-first quadrant
+            };
+            
+            tasks[taskId] = task;
+            
+            createTaskElement(task);
+            
+            // Clear inputs
+            titleInput.value = '';
+            descriptionInput.value = '';
+            
+            saveTasks();
+        }
 
-    document.addEventListener("mousemove", (e) => {
-      if (isDragging) {
-        task.style.left = `${e.pageX - offsetX}px`;
-        task.style.top = `${e.pageY - offsetY}px`;
-      }
-    });
+        function createTaskElement(task) {
+            const taskElement = document.createElement('div');
+            taskElement.className = 'task';
+            taskElement.draggable = true;
+            taskElement.dataset.taskId = task.id;
+            
+            taskElement.innerHTML = `
+                <button class="delete-btn" onclick="deleteTask('${task.id}')" title="Delete task">×</button>
+                <div class="task-title">${escapeHtml(task.title)}</div>
+                ${task.description ? `<div class="task-description">${escapeHtml(task.description)}</div>` : ''}
+            `;
+            
+            // Add drag event listeners
+            taskElement.addEventListener('dragstart', handleDragStart);
+            taskElement.addEventListener('dragend', handleDragEnd);
+            
+            // Add to appropriate quadrant
+            const quadrantTasks = document.getElementById(`${task.quadrant}-tasks`);
+            quadrantTasks.appendChild(taskElement);
+        }
 
-    document.addEventListener("mouseup", (e) => {
-      if (!isDragging) return;
-      isDragging = false;
+        function deleteTask(taskId) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                delete tasks[taskId];
+                const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+                if (taskElement) {
+                    taskElement.remove();
+                }
+                saveTasks();
+            }
+        }
 
-      const matrix = document.getElementById("matrix");
-      const rect = matrix.getBoundingClientRect();
-      const x = e.pageX - rect.left;
-      const y = e.pageY - rect.top;
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all tasks?')) {
+                tasks = {};
+                document.querySelectorAll('.tasks').forEach(tasksContainer => {
+                    tasksContainer.innerHTML = '';
+                });
+                saveTasks();
+            }
+        }
 
-      const width = rect.width;
-      const height = rect.height;
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-      const centerX = width / 2;
-      const centerY = height / 2;
+        // Drag and Drop functionality
+        let draggedElement = null;
 
-      let snapLeft = 0;
-      let snapTop = 0;
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.style.opacity = '0.5';
+        }
 
-      if (x < centerX && y < centerY) {
-        snapLeft = width * 0.25;
-        snapTop = height * 0.25;
-      } else if (x >= centerX && y < centerY) {
-        snapLeft = width * 0.75;
-        snapTop = height * 0.25;
-      } else if (x < centerX && y >= centerY) {
-        snapLeft = width * 0.25;
-        snapTop = height * 0.75;
-      } else {
-        snapLeft = width * 0.75;
-        snapTop = height * 0.75;
-      }
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            draggedElement = null;
+        }
 
-      task.style.left = `${snapLeft - task.offsetWidth / 2}px`;
-      task.style.top = `${snapTop - task.offsetHeight / 2}px`;
-    });
-  }
-</script>
+        // Add drag and drop event listeners to quadrants
+        document.querySelectorAll('.drop-zone').forEach(quadrant => {
+            quadrant.addEventListener('dragover', handleDragOver);
+            quadrant.addEventListener('drop', handleDrop);
+            quadrant.addEventListener('dragenter', handleDragEnter);
+            quadrant.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            if (draggedElement) {
+                const taskId = draggedElement.dataset.taskId;
+                const newQuadrant = this.dataset.quadrant;
+                
+                // Update task data
+                if (tasks[taskId]) {
+                    tasks[taskId].quadrant = newQuadrant;
+                }
+                
+                // Move element to new quadrant
+                const tasksContainer = this.querySelector('.tasks');
+                tasksContainer.appendChild(draggedElement);
+                
+                saveTasks();
+            }
+        }
+
+        // Local storage functions
+        function saveTasks() {
+            const data = {
+                tasks: tasks,
+                counter: taskCounter
+            };
+            // Store in memory instead of localStorage for Claude.ai compatibility
+            window.matrixData = data;
+        }
+
+        function loadTasks() {
+            // Load from memory instead of localStorage for Claude.ai compatibility
+            const data = window.matrixData;
+            if (data) {
+                tasks = data.tasks || {};
+                taskCounter = data.counter || 0;
+                
+                // Recreate task elements
+                Object.values(tasks).forEach(task => {
+                    createTaskElement(task);
+                });
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && (e.target.id === 'taskTitle' || e.target.id === 'taskDescription')) {
+                addTask();
+            }
+        });
+
+        // Load tasks on page load
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        // Sample tasks for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some sample tasks if none exist
+            setTimeout(() => {
+                if (Object.keys(tasks).length === 0) {
+                    const sampleTasks = [
+                        { title: "Fix critical security vulnerability", description: "Patch SQL injection in login form", quadrant: "do-first" },
+                        { title: "Implement user authentication", description: "Add OAuth integration for better UX", quadrant: "schedule" },
+                        { title: "Update documentation", description: "Fix typos in README", quadrant: "delegate" },
+                        { title: "Refactor legacy code", description: "Clean up old unused functions", quadrant: "eliminate" }
+                    ];
+                    
+                    sampleTasks.forEach(taskData => {
+                        taskCounter++;
+                        const taskId = `task-${taskCounter}`;
+                        const task = { ...taskData, id: taskId };
+                        tasks[taskId] = task;
+                        createTaskElement(task);
+                    });
+                    saveTasks();
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
