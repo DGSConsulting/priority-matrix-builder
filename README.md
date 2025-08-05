@@ -5,7 +5,6 @@
 
 Tired of juggling client deadlines while that "quick fix" from three weeks ago haunts your dreams? Stop playing project roulette with your freelance business! This isn't just another task manager – it's your secret weapon for turning overwhelming client demands into organized, profitable workflows.
 
-![DGS Priority Matrix](https://via.placeholder.com/800x400/0d1117/58a6ff?text=🚀+DGS+Priority+Matrix+⚡)
 
 ## 🔥 Why DGS Consulting Built This
 
