@@ -21,6 +21,6 @@
     .task-q4 { border-color: blue; background: #e6f3ff; }
     .remove { position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; background: red; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 10px; }
     .labels { position: absolute; font-size: 12px; font-weight: bold; }
-    .label-x { bottom: -25px; left: 50%; transform: translateX(-50%); }
-    .label-y { left: -60px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+    .label-x { top: 50%;  left: -50px; transform: rotate(-90deg); }
+    .label-y { top: -30px; left: 50%; transform: translateX(-50%);}
   </style>
