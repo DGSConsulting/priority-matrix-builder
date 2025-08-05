@@ -93,64 +93,59 @@
   </div>
 
   <!-- Inline JavaScript -->
-  <script>
-    function addTask() {
-      const input = document.getElementById("taskInput");
-      const text = input.value.trim();
-      if (!text) return;
+ <script>
+  function makeTaskDraggable(task) {
+    let offsetX = 0, offsetY = 0, isDragging = false;
 
-      const task = document.createElement("div");
-      task.className = "task";
-      task.textContent = text;
+    task.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+    });
 
-      // Place task in the center by default
-      task.style.left = "50%";
-      task.style.top = "50%";
-      task.style.transform = "translate(-50%, -50%)";
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        task.style.left = `${e.pageX - offsetX}px`;
+        task.style.top = `${e.pageY - offsetY}px`;
+      }
+    });
 
-      // Make draggable
-      task.draggable = true;
-      task.addEventListener("dragstart", dragStart);
-      task.addEventListener("dragend", dragEnd);
+    document.addEventListener("mouseup", (e) => {
+      if (!isDragging) return;
+      isDragging = false;
 
-      document.getElementById("matrix").appendChild(task);
-      input.value = "";
-    }
+      const matrix = document.getElementById("matrix");
+      const rect = matrix.getBoundingClientRect();
+      const x = e.pageX - rect.left;
+      const y = e.pageY - rect.top;
 
-    function clearAll() {
-      const tasks = document.querySelectorAll(".task");
-      tasks.forEach(t => t.remove());
-    }
+      const width = rect.width;
+      const height = rect.height;
 
-    function dragStart(e) {
-      e.dataTransfer.setData("text/plain", "");
-      this.style.opacity = "0.5";
-    }
+      const centerX = width / 2;
+      const centerY = height / 2;
 
-    function dragEnd(e) {
-      this.style.left = `${e.pageX - this.offsetWidth / 2}px`;
-      this.style.top = `${e.pageY - this.offsetHeight / 2}px`;
-      this.style.opacity = "1";
-    }
+      let snapLeft = 0;
+      let snapTop = 0;
 
-    function addTaskAtPosition(e) {
-      if (!e.target.classList.contains("matrix")) return;
+      if (x < centerX && y < centerY) {
+        snapLeft = width * 0.25;
+        snapTop = height * 0.25;
+      } else if (x >= centerX && y < centerY) {
+        snapLeft = width * 0.75;
+        snapTop = height * 0.25;
+      } else if (x < centerX && y >= centerY) {
+        snapLeft = width * 0.25;
+        snapTop = height * 0.75;
+      } else {
+        snapLeft = width * 0.75;
+        snapTop = height * 0.75;
+      }
 
-      const text = prompt("Enter task name:");
-      if (!text) return;
-
-      const task = document.createElement("div");
-      task.className = "task";
-      task.textContent = text;
-      task.style.left = `${e.offsetX}px`;
-      task.style.top = `${e.offsetY}px`;
-
-      task.draggable = true;
-      task.addEventListener("dragstart", dragStart);
-      task.addEventListener("dragend", dragEnd);
-
-      e.target.appendChild(task);
-    }
-  </script>
+      task.style.left = `${snapLeft - task.offsetWidth / 2}px`;
+      task.style.top = `${snapTop - task.offsetHeight / 2}px`;
+    });
+  }
+</script>
 </body>
 </html>
