@@ -2,7 +2,7 @@
 
 A clean, mobile-friendly Eisenhower Matrix tool to help freelancers and consultants organize tasks by **impact** and **effort**. Stop letting urgent-but-unimportant tasks derail your revenue-generating work.
 
-## 🚀 [Try it Live](https://dgsconsulting.github.io/priority-matrix-builder/) | [Download](https://github.com/DGSConsulting/priority-matrix-builder/releases/latest/download/dgs-priority-matrix.html)
+## 🚀 [Try it Live](https://dgsconsulting.github.io/priority-matrix-builder/) | 
 
 ![Priority Matrix Screenshot](docs/priority-matrix-example.png)
 
